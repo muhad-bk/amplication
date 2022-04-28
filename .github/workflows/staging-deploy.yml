@@ -57,6 +57,6 @@ jobs:
           set -e;
           docker run \
             --network host \
-            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER }}:${{ secrets.STAGING_DB_PASSWORD }}@amplication-staging.csf5nwabym5c.us-east-1.rds.amazonaws.com:5432/app_database" \
+            --env POSTGRESQL_URL="postgresql://${{ secrets.STAGING_DB_USER_AWS }}:${{ secrets.STAGING_DB_PASSWORD }}@amplication-staging.csf5nwabym5c.us-east-1.rds.amazonaws.com:5432/app_database" \
             amplication/amplication:${{ github.sha }} \
             npm run migrate:up
