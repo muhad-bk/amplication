@@ -84,3 +84,7 @@ cp-helm-charts:
     enabled: false
   cp-kspl-server:
     enabled: false
+
+config:
+  env:
+    

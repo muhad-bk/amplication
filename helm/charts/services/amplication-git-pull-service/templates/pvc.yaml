@@ -1,5 +1,5 @@
-{{ include "base.pvc" (list . "amplication-server.pvc") -}}
-{{- define "amplication-server.pvc" -}}
+{{ include "base.pvc" (list . "amplication-git-pull-service.pvc") -}}
+{{- define "amplication-git-pull-service.pvc" -}}
 spec:
   accessModes:
     - ReadWriteMany
