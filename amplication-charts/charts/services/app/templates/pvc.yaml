@@ -1,3 +1,0 @@
-{{ include "base.pvc" (list . "app.pvc") -}}
-{{- define "app.pvc" -}}
-{{- end }}

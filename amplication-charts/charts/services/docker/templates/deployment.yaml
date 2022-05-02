@@ -1,3 +1,0 @@
-{{ include "base.deployment" (list . "docker.deployment") -}}
-{{- define "docker.deployment" -}}
-{{- end }}

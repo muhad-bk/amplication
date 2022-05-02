@@ -1,3 +1,0 @@
-{{ include "base.deployment" (list . "registry.deployment") -}}
-{{- define "registry.deployment" -}}
-{{- end }}

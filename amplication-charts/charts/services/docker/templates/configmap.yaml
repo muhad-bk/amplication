@@ -1,3 +1,0 @@
-{{ include "base.configmap" (list . "docker.configmap") -}}
-{{- define "docker.configmap" -}}
-{{- end }}
