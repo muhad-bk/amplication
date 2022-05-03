@@ -6,15 +6,29 @@ ROOT_FOLDER=${GITHUB_WORKSPACE:=$SCRIPT_DIR/amplication}
 HELM_SERVICES_FOLDER="$ROOT_FOLDER/helm/charts/services"
 IMAGE_TAG_ANCHOR=${SOURCE_BRANCH_NAME:=master}
 touch $OUTPUT_PATH
+
+
+
 for dir in /$HELM_SERVICES_FOLDER/*/
 do
     echo "cleaning up $dir"
     SERVICE_NAME="$(basename $dir)"
-    REPO_NAME="$SERVICE_NAME-$TARGET_ENV"
+    REPO_NAME=${GITHUB_REPOSITORY##*/}
+    echo "REPO_NAME: $REPO_NAME"
+    if [ "$REPO_NAME" = "amplication" ]; then
+        echo "Will use dev prefix"
+        REPO_SUFFIX="dev"
+    else
+        echo "Will use prod prefix"
+        REPO_SUFFIX="prod" 
+    fi
+    REPO_NAME="$SERVICE_NAME-$REPO_SUFFIX"
     echo "SERVICE_NAME: $SERVICE_NAME"
-    tag_list=$(aws ecr describe-images --repository-name $REPO_NAME --image-ids imageTag=$IMAGE_TAG_ANCHOR --region us-east-1 2>&1 | jq -r '.imageDetails[0].imageTags' | jq -r '.[]')
+    echo "REPO_NAME: $REPO_NAME"
+    tag_list="$(aws ecr describe-images --repository-name=$REPO_NAME --region us-east-1 --image-ids=imageTag=$IMAGE_TAG_ANCHOR 2> /dev/null )"
+    image_tags=$(echo $tag_list | jq -r '.imageDetails[0].imageTags' 2>&1)
     echo "tag_list: $tag_list"
-    VERSIONS=""
+    echo "image_tags: $image_tags"
     
     echo "$IMAGE_TAG_ANCHOR" > found_tag
     while IFS= read -r line; do
@@ -23,7 +37,7 @@ do
         if [[ $line =~ $re ]] ; then
           echo "$line" > found_tag
         fi
-    done <<< "$tag_list"
+    done <<< "$image_tags"
     
     FOUND_TAG=$(cat found_tag)
     if [ -z "$FOUND_TAG" ]
@@ -33,6 +47,11 @@ do
     else
       echo "FOUND_TAG: $FOUND_TAG"
     fi
+    if ! [ -z "$VERSIONS" ]
+    then
+      VERSIONS+=" "
+    fi
+
     VERSIONS+="-p $SERVICE_NAME.deployment.image.tag=$FOUND_TAG"
 done
 echo "$VERSIONS" >> $OUTPUT_PATH
