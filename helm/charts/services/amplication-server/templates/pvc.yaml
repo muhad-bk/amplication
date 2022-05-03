@@ -6,5 +6,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.pvc.storageRequest }}
-  storageClassName: aws-efs
 {{- end }}
